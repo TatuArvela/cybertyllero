@@ -125,8 +125,12 @@
         const x = pointX - rect.left;
         const y = pointY - rect.top;
 
-        const rotateX = (y - rect.height / 2) / 10;
-        const rotateY = -(x - rect.width / 2) / 10 + (flipped ? 180 : 0);
+        // Ensure x and y are within the bounds of the card
+        const boundedX = Math.max(0, Math.min(x, rect.width));
+        const boundedY = Math.max(0, Math.min(y, rect.height));
+
+        const rotateX = (boundedY - rect.height / 2) / 10;
+        const rotateY = -(boundedX - rect.width / 2) / 10 + (flipped ? 180 : 0);
 
         card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
 
@@ -134,8 +138,8 @@
         const lightOverlays = document.querySelectorAll(".light-overlay");
         lightOverlays.forEach((overlay) => {
           overlay.style.opacity = tiltAmount / 50;
-          overlay.style.transform = `translate(${x - rect.width / 2}px, ${
-            y - rect.height / 2
+          overlay.style.transform = `translate(${boundedX - rect.width / 2}px, ${
+            boundedY - rect.height / 2
           }px)`;
         });
       };
@@ -159,7 +163,12 @@
 
         flipped = !flipped;
 
-        updateCardTransform(e.clientX, e.clientY);
+        // Only update transform for mouse clicks, not touch
+        if (e.type === "click") {
+          updateCardTransform(e.clientX, e.clientY);
+        } else {
+          handleMouseLeave();
+        }
 
         isFlipping = true;
         card.classList.add("flipping");
@@ -185,6 +194,7 @@
 
       card.addEventListener("touchmove", handleTouchMove);
       card.addEventListener("touchend", handleTouchEnd);
+      card.addEventListener("touchstart", handleClick); // Handle tap as click
 
       window.addEventListener("resize", resizeCard);
       resizeCard();
