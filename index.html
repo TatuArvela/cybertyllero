@@ -28,6 +28,8 @@
         perspective: 1000px;
         overflow: hidden;
         background-color: #ffffff;
+        user-select: none;
+        touch-action: none;
       }
       @media (prefers-color-scheme: dark) {
         body {
@@ -87,6 +89,10 @@
         opacity: 0;
         transition: opacity 0.5s ease, transform 0.1s ease;
       }
+      * {
+        user-select: none;
+        touch-action: none;
+      }
     </style>
   </head>
   <body>
@@ -104,6 +110,7 @@
       const card = document.getElementById("card");
       let flipped = false;
       let isFlipping = false;
+      let touchStartTime = 0;
 
       const resizeCard = () => {
         const bodyWidth = document.body.clientWidth;
@@ -161,13 +168,13 @@
 
       const handlePointerDown = (e) => {
         if (isFlipping) return;
-        flipped = !flipped;
-
-        if (e.pointerType === "mouse") {
-          updateCardTransform(e.clientX, e.clientY);
-        } else {
-          handlePointerLeave();
+        if (e.pointerType === "touch") {
+          touchStartTime = performance.now();
+          return;
         }
+
+        flipped = !flipped;
+        handlePointerMove(e);
 
         isFlipping = true;
         card.classList.add("flipping");
@@ -177,9 +184,30 @@
         }, 500);
       };
 
+      const handlePointerUp = (e) => {
+        if (isFlipping || e.pointerType !== "touch") return;
+
+        const touchEndTime = performance.now();
+        const touchDuration = touchEndTime - touchStartTime;
+
+        // Consider a quick tap if the duration is less than 300ms
+        if (touchDuration < 300) {
+          flipped = !flipped;
+          handlePointerLeave();
+
+          isFlipping = true;
+          card.classList.add("flipping");
+          setTimeout(() => {
+            card.classList.remove("flipping");
+            isFlipping = false;
+          }, 500);
+        }
+      };
+
       card.addEventListener("pointermove", handlePointerMove);
       card.addEventListener("pointerleave", handlePointerLeave);
       card.addEventListener("pointerdown", handlePointerDown);
+      card.addEventListener("pointerup", handlePointerUp);
 
       window.addEventListener("resize", resizeCard);
       resizeCard();
