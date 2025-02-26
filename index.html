@@ -1,11 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cybertyllerö</title>
-</head>
-<body>
-    Hei maailma
-</body>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        width: 100vw;
+        margin: 0;
+        perspective: 1000px;
+      }
+      #card {
+        width: 400px;
+        height: 600px;
+        position: relative;
+        transition: transform 0.5s;
+        transform-style: preserve-3d;
+      }
+      #card:hover {
+        transition-duration: 0.1s;
+      }
+      #card.flipping:hover {
+        transition-duration: 0.5s;
+      }
+      .card-face {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+      }
+      .card-front {
+        display: flex;
+      }
+      .card-back {
+        transform: rotateY(180deg);
+        background-color: orange;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 2em;
+      }
+      img {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="card">
+      <div class="card-face card-front">
+        <img src="https://placehold.co/400x600" />
+      </div>
+      <div class="card-face card-back">
+        <img src="https://placehold.co/400x600/orange/white" />
+      </div>
+    </div>
+    <script>
+      const card = document.getElementById("card");
+      let flipped = false;
+      let isFlipping = false;
+
+      const updateCardTransform = (pointX, pointY) => {
+        const rect = card.getBoundingClientRect();
+
+        const x = pointX - rect.left;
+        const y = pointY - rect.top;
+
+        const rotateX = (y - rect.height / 2) / 10;
+        const rotateY = -(x - rect.width / 2) / 10 + (flipped ? 180 : 0);
+
+        card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      };
+
+      card.addEventListener("mousemove", (e) => {
+        if (isFlipping) return;
+        updateCardTransform(e.clientX, e.clientY);
+      });
+
+      card.addEventListener("mouseleave", () => {
+        card.style.transform = `rotateX(${0}deg) rotateY(${
+          flipped ? 180 : 0
+        }deg)`;
+      });
+
+      card.addEventListener("click", (e) => {
+        if (isFlipping) return;
+
+        flipped = !flipped;
+
+        updateCardTransform(e.clientX, e.clientY);
+
+        isFlipping = true;
+        card.classList.add("flipping");
+        setTimeout(() => {
+          card.classList.remove("flipping");
+          isFlipping = false;
+        }, 500);
+      });
+    </script>
+  </body>
 </html>
