@@ -85,7 +85,7 @@
         );
         pointer-events: none;
         opacity: 0;
-        transition: opacity 0.5s ease, transform 0.5s ease;
+        transition: opacity 0.5s ease, transform 0.1s ease;
       }
     </style>
   </head>
@@ -140,21 +140,21 @@
         });
       };
 
-      card.addEventListener("mousemove", (e) => {
+      const handleMouseMove = (e) => {
         if (isFlipping) return;
         updateCardTransform(e.clientX, e.clientY);
-      });
+      };
 
-      card.addEventListener("mouseleave", () => {
+      const handleMouseLeave = () => {
         card.style.transform = `rotateX(${0}deg) rotateY(${
           flipped ? 180 : 0
         }deg)`;
         document.querySelectorAll(".light-overlay").forEach((overlay) => {
           overlay.style.opacity = 0;
         });
-      });
+      };
 
-      card.addEventListener("click", (e) => {
+      const handleClick = (e) => {
         if (isFlipping) return;
 
         flipped = !flipped;
@@ -167,7 +167,24 @@
           card.classList.remove("flipping");
           isFlipping = false;
         }, 500);
-      });
+      };
+
+      const handleTouchMove = (e) => {
+        if (isFlipping) return;
+        const touch = e.touches[0];
+        updateCardTransform(touch.clientX, touch.clientY);
+      };
+
+      const handleTouchEnd = () => {
+        handleMouseLeave();
+      };
+
+      card.addEventListener("mousemove", handleMouseMove);
+      card.addEventListener("mouseleave", handleMouseLeave);
+      card.addEventListener("click", handleClick);
+
+      card.addEventListener("touchmove", handleTouchMove);
+      card.addEventListener("touchend", handleTouchEnd);
 
       window.addEventListener("resize", resizeCard);
       resizeCard();
