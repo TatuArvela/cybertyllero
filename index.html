@@ -35,11 +35,11 @@
         }
       }
       #card {
-        width: 400px;
-        height: 600px;
         position: relative;
         transition: transform 0.5s;
         transform-style: preserve-3d;
+        max-width: 100%;
+        max-height: 100%;
       }
       #card:hover {
         transition-duration: 0.1s;
@@ -68,6 +68,9 @@
       }
       img {
         margin: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
       }
       .light-overlay {
         position: absolute;
@@ -89,11 +92,11 @@
   <body>
     <div id="card">
       <div class="card-face card-front">
-        <img src="https://placehold.co/400x600" />
+        <img src="https://placehold.co/1200x1800" />
         <div class="light-overlay"></div>
       </div>
       <div class="card-face card-back">
-        <img src="https://placehold.co/400x600/orange/white" />
+        <img src="https://placehold.co/1200x1800/orange/white" />
         <div class="light-overlay"></div>
       </div>
     </div>
@@ -101,6 +104,20 @@
       const card = document.getElementById("card");
       let flipped = false;
       let isFlipping = false;
+
+      const resizeCard = () => {
+        const bodyWidth = document.body.clientWidth;
+        const bodyHeight = document.body.clientHeight;
+        const aspectRatio = 1200 / 1800;
+
+        if (bodyWidth / bodyHeight > aspectRatio) {
+          card.style.width = `${bodyHeight * aspectRatio}px`;
+          card.style.height = `${bodyHeight}px`;
+        } else {
+          card.style.width = `${bodyWidth}px`;
+          card.style.height = `${bodyWidth / aspectRatio}px`;
+        }
+      };
 
       const updateCardTransform = (pointX, pointY) => {
         const rect = card.getBoundingClientRect();
@@ -151,6 +168,9 @@
           isFlipping = false;
         }, 500);
       });
+
+      window.addEventListener("resize", resizeCard);
+      resizeCard();
     </script>
   </body>
 </html>
