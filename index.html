@@ -13,6 +13,8 @@
         width: 100vw;
         margin: 0;
         perspective: 1000px;
+        overflow: hidden;
+        background-color: #111;
       }
       #card {
         width: 400px;
@@ -32,6 +34,7 @@
         width: 100%;
         height: 100%;
         backface-visibility: hidden;
+        overflow: hidden;
       }
       .card-front {
         display: flex;
@@ -48,15 +51,28 @@
       img {
         margin: 0;
       }
+      .light-overlay {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent 70%);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.5s ease, transform 0.5s ease;
+      }
     </style>
   </head>
   <body>
     <div id="card">
       <div class="card-face card-front">
         <img src="https://placehold.co/400x600" />
+        <div class="light-overlay"></div>
       </div>
       <div class="card-face card-back">
         <img src="https://placehold.co/400x600/orange/white" />
+        <div class="light-overlay"></div>
       </div>
     </div>
     <script>
@@ -74,6 +90,13 @@
         const rotateY = -(x - rect.width / 2) / 10 + (flipped ? 180 : 0);
 
         card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+
+        const tiltAmount = Math.max(Math.abs(rotateX), Math.abs(rotateY));
+        const lightOverlays = document.querySelectorAll('.light-overlay');
+        lightOverlays.forEach(overlay => {
+          overlay.style.opacity = tiltAmount / 50;
+          overlay.style.transform = `translate(${x - rect.width / 2}px, ${y - rect.height / 2}px)`;
+        });
       };
 
       card.addEventListener("mousemove", (e) => {
@@ -85,6 +108,9 @@
         card.style.transform = `rotateX(${0}deg) rotateY(${
           flipped ? 180 : 0
         }deg)`;
+        document.querySelectorAll('.light-overlay').forEach(overlay => {
+          overlay.style.opacity = 0;
+        });
       });
 
       card.addEventListener("click", (e) => {
