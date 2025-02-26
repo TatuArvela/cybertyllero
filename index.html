@@ -3,18 +3,36 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="theme-color"
+      content="#FFFFFF"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#000000"
+      media="(prefers-color-scheme: dark)"
+    />
     <title>Cybertyllerö</title>
     <style>
+      html {
+        overscroll-behavior: none;
+      }
       body {
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
+        height: 100dvh;
         width: 100vw;
         margin: 0;
         perspective: 1000px;
         overflow: hidden;
-        background-color: #111;
+        background-color: #ffffff;
+      }
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: #000000;
+        }
       }
       #card {
         width: 400px;
@@ -57,7 +75,11 @@
         left: -50%;
         width: 200%;
         height: 200%;
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent 70%);
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.4),
+          transparent 70%
+        );
         pointer-events: none;
         opacity: 0;
         transition: opacity 0.5s ease, transform 0.5s ease;
@@ -92,10 +114,12 @@
         card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
 
         const tiltAmount = Math.max(Math.abs(rotateX), Math.abs(rotateY));
-        const lightOverlays = document.querySelectorAll('.light-overlay');
-        lightOverlays.forEach(overlay => {
+        const lightOverlays = document.querySelectorAll(".light-overlay");
+        lightOverlays.forEach((overlay) => {
           overlay.style.opacity = tiltAmount / 50;
-          overlay.style.transform = `translate(${x - rect.width / 2}px, ${y - rect.height / 2}px)`;
+          overlay.style.transform = `translate(${x - rect.width / 2}px, ${
+            y - rect.height / 2
+          }px)`;
         });
       };
 
@@ -108,7 +132,7 @@
         card.style.transform = `rotateX(${0}deg) rotateY(${
           flipped ? 180 : 0
         }deg)`;
-        document.querySelectorAll('.light-overlay').forEach(overlay => {
+        document.querySelectorAll(".light-overlay").forEach((overlay) => {
           overlay.style.opacity = 0;
         });
       });
