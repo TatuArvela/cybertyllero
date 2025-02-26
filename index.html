@@ -186,7 +186,7 @@
           touchStartTime = performance.now();
         } else {
           flipped = !flipped;
-          handlePointerMove(e);
+          updateCardTransform(e.clientX, e.clientY);
 
           isFlipping = true;
           card.classList.add("flipping");
