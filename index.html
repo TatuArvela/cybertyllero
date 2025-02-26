@@ -138,18 +138,19 @@
         const lightOverlays = document.querySelectorAll(".light-overlay");
         lightOverlays.forEach((overlay) => {
           overlay.style.opacity = tiltAmount / 50;
-          overlay.style.transform = `translate(${boundedX - rect.width / 2}px, ${
-            boundedY - rect.height / 2
-          }px)`;
+          overlay.style.transform = `translate(${
+            boundedX - rect.width / 2
+          }px, ${boundedY - rect.height / 2}px)`;
         });
       };
 
-      const handleMouseMove = (e) => {
+      const handlePointerMove = (e) => {
         if (isFlipping) return;
         updateCardTransform(e.clientX, e.clientY);
       };
 
-      const handleMouseLeave = () => {
+      const handlePointerLeave = () => {
+        if (isFlipping) return;
         card.style.transform = `rotateX(${0}deg) rotateY(${
           flipped ? 180 : 0
         }deg)`;
@@ -158,16 +159,14 @@
         });
       };
 
-      const handleClick = (e) => {
+      const handlePointerDown = (e) => {
         if (isFlipping) return;
-
         flipped = !flipped;
 
-        // Only update transform for mouse clicks, not touch
-        if (e.type === "click") {
+        if (e.pointerType === "mouse") {
           updateCardTransform(e.clientX, e.clientY);
         } else {
-          handleMouseLeave();
+          handlePointerLeave();
         }
 
         isFlipping = true;
@@ -178,23 +177,9 @@
         }, 500);
       };
 
-      const handleTouchMove = (e) => {
-        if (isFlipping) return;
-        const touch = e.touches[0];
-        updateCardTransform(touch.clientX, touch.clientY);
-      };
-
-      const handleTouchEnd = () => {
-        handleMouseLeave();
-      };
-
-      card.addEventListener("mousemove", handleMouseMove);
-      card.addEventListener("mouseleave", handleMouseLeave);
-      card.addEventListener("click", handleClick);
-
-      card.addEventListener("touchmove", handleTouchMove);
-      card.addEventListener("touchend", handleTouchEnd);
-      card.addEventListener("touchstart", handleClick); // Handle tap as click
+      card.addEventListener("pointermove", handlePointerMove);
+      card.addEventListener("pointerleave", handlePointerLeave);
+      card.addEventListener("pointerdown", handlePointerDown);
 
       window.addEventListener("resize", resizeCard);
       resizeCard();
