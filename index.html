@@ -111,6 +111,7 @@
       let flipped = false;
       let isFlipping = false;
       let touchStartTime = 0;
+      let isThrottled = false;
 
       const resizeCard = () => {
         const bodyWidth = document.body.clientWidth;
@@ -151,10 +152,23 @@
         });
       };
 
-      const handlePointerMove = (e) => {
+      const throttle = (func, limit) => {
+        let inThrottle;
+        return function() {
+          const context = this;
+          const args = arguments;
+          if (!inThrottle) {
+            func.apply(context, args);
+            inThrottle = true;
+            setTimeout(() => (inThrottle = false), limit);
+          }
+        };
+      };
+
+      const handlePointerMove = throttle((e) => {
         if (isFlipping) return;
         updateCardTransform(e.clientX, e.clientY);
-      };
+      }, 50); // Throttle to 20 times per second
 
       const handlePointerLeave = () => {
         if (isFlipping) return;
@@ -170,18 +184,17 @@
         if (isFlipping) return;
         if (e.pointerType === "touch") {
           touchStartTime = performance.now();
-          return;
+        } else {
+          flipped = !flipped;
+          handlePointerMove(e);
+
+          isFlipping = true;
+          card.classList.add("flipping");
+          setTimeout(() => {
+            card.classList.remove("flipping");
+            isFlipping = false;
+          }, 500);
         }
-
-        flipped = !flipped;
-        handlePointerMove(e);
-
-        isFlipping = true;
-        card.classList.add("flipping");
-        setTimeout(() => {
-          card.classList.remove("flipping");
-          isFlipping = false;
-        }, 500);
       };
 
       const handlePointerUp = (e) => {
