@@ -50,29 +50,30 @@
         transition-duration: 0.5s;
       }
       .card-face {
-        position: absolute;
-        width: 100%;
         height: 100%;
+        width: 100%;
         backface-visibility: hidden;
-        overflow: hidden;
+        border-radius: 40px;
+        overflow: clip;
+        position: absolute;
       }
-      .card-front {
-        display: flex;
-      }
-      .card-back {
+      #card-back {
         transform: rotateY(180deg);
-        background-color: orange;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: white;
-        font-size: 2em;
       }
       img {
+        position: absolute;
         margin: 0;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
         width: 100%;
         height: 100%;
         object-fit: cover;
+        display: none;
+      }
+      img.active {
+        display: block;
       }
       .light-overlay {
         position: absolute;
@@ -97,12 +98,13 @@
   </head>
   <body>
     <div id="card">
-      <div class="card-face card-front">
-        <img src="https://placehold.co/1200x1800" />
+      <div class="card-face" id="card-front">
+        <img src="./front1.png" class="active" />
+        <img src="./front2.png" />
         <div class="light-overlay"></div>
       </div>
-      <div class="card-face card-back">
-        <img src="https://placehold.co/1200x1800/orange/white" />
+      <div class="card-face" id="card-back">
+        <img src="./back1.png" class="active" />
         <div class="light-overlay"></div>
       </div>
     </div>
@@ -142,10 +144,10 @@
 
         card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
 
-        const tiltAmount = Math.max(Math.abs(rotateX), Math.abs(rotateY));
         const lightOverlays = document.querySelectorAll(".light-overlay");
         lightOverlays.forEach((overlay) => {
-          overlay.style.opacity = tiltAmount / 50;
+          // Calculate opacity based on tilt amount, scaling it to a range of 0 to 1
+          overlay.style.opacity = 0.5;
           overlay.style.transform = `translate(${
             boundedX - rect.width / 2
           }px, ${boundedY - rect.height / 2}px)`;
@@ -154,7 +156,7 @@
 
       const throttle = (func, limit) => {
         let inThrottle;
-        return function() {
+        return function () {
           const context = this;
           const args = arguments;
           if (!inThrottle) {
@@ -180,6 +182,19 @@
         });
       };
 
+      const changeImage = () => {
+        const cardFaceId = flipped ? "card-front" : "card-back";
+        const face = document.getElementById(cardFaceId);
+        const faceImages = face.querySelectorAll("img");
+        const activeImage = face.querySelector("img.active");
+
+        const currentIndex = Array.from(faceImages).indexOf(activeImage);
+        const nextIndex =
+          currentIndex === faceImages.length - 1 ? 0 : currentIndex + 1;
+        activeImage.classList.remove("active");
+        faceImages[nextIndex].classList.add("active");
+      };
+
       const handlePointerDown = (e) => {
         if (isFlipping) return;
         if (e.pointerType === "touch") {
@@ -191,6 +206,7 @@
           isFlipping = true;
           card.classList.add("flipping");
           setTimeout(() => {
+            changeImage();
             card.classList.remove("flipping");
             isFlipping = false;
           }, 500);
