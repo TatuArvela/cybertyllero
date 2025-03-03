@@ -53,7 +53,6 @@
         height: 100%;
         width: 100%;
         backface-visibility: hidden;
-        border-radius: 40px;
         overflow: clip;
         position: absolute;
       }
@@ -118,7 +117,7 @@
       const resizeCard = () => {
         const bodyWidth = document.body.clientWidth;
         const bodyHeight = document.body.clientHeight;
-        const aspectRatio = 1200 / 1800;
+        const aspectRatio = 1333 / 2000;
 
         if (bodyWidth / bodyHeight > aspectRatio) {
           card.style.width = `${bodyHeight * aspectRatio}px`;
@@ -227,6 +226,7 @@
           isFlipping = true;
           card.classList.add("flipping");
           setTimeout(() => {
+            changeImage();
             card.classList.remove("flipping");
             isFlipping = false;
           }, 500);
