@@ -87,7 +87,7 @@
         display: flex;
         pointer-events: none;
         opacity: 0;
-        transition: all 0.5s;
+        transition: all 0.5s ease;
       }
       #eventbrite.visible {
         justify-content: center;
@@ -104,6 +104,24 @@
         width: 100%;
         position: absolute;
         height: 10%;
+      }
+      @keyframes delayed-link-enable {
+        0% {
+          cursor: default;
+          pointer-events: none;
+        }
+        99% {
+          cursor: default;
+          pointer-events: none;
+        }
+        100% {
+          cursor: pointer;
+          pointer-events: visible;
+        }
+      }
+      #eventbrite.visible a {
+        animation-name: delayed-link-enable;
+        animation-duration: 0.5s;
         cursor: pointer;
         pointer-events: visible;
       }
@@ -143,7 +161,13 @@
         <div class="light-overlay"></div>
       </div>
     </div>
-    <div id="eventbrite"><img src="./eventbrite.png" /><a href="https://www.eventbrite.fi/e/elina-tatu-cyber-bday-party-tickets-1267794841499" target="_blank" rel="noopener noreferrer"></a></div>
+    <div id="eventbrite">
+      <img src="./eventbrite.png" /><a
+        href="https://www.eventbrite.fi/e/elina-tatu-cyber-bday-party-tickets-1267794841499"
+        target="_blank"
+        rel="noopener noreferrer"
+      ></a>
+    </div>
     <script>
       const card = document.getElementById("card");
       const eventbrite = document.getElementById("eventbrite");
